@@ -724,8 +724,8 @@ fastify.get("/calls", async (_, reply) => {
           const nextNumber = phoneNumberQueue.shift();
           makeCall(nextNumber);
           
-          // Aktualizovat seznam zbývajících čísel
-          document.getElementById('phoneNumbers').value = [nextNumber + ' (právě voláno)', ...phoneNumberQueue].join('\\n');
+          // Aktualizovat seznam zbývajících čísel bez zobrazení textu o právě volaném čísle
+          document.getElementById('phoneNumbers').value = [...phoneNumberQueue].join('\\n');
         }
         
         // Zastavení sekvenčního volání
