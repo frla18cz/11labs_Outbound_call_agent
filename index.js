@@ -495,17 +495,6 @@ fastify.get("/calls", async (_, reply) => {
         <strong>Server URL:</strong> ${serverUrl || 'Není nastaveno v .env souboru'}
       </div>
       
-      <div class="settings-panel">
-        <h2>Nastavení</h2>
-        <div class="controls">
-          <label>Automatická aktualizace:</label>
-          <input type="checkbox" id="autoRefresh" checked>
-          <span style="margin-left: 5px;">každých</span>
-          <input type="number" id="refreshInterval" value="500" min="200" max="10000" style="width: 70px;">
-          <span>ms</span>
-        </div>
-      </div>
-      
       <div class="controls">
         <div style="width: 100%;">
           <label for="phoneNumbers">Telefonní čísla (jedno na řádek):</label>
@@ -566,6 +555,8 @@ fastify.get("/calls", async (_, reply) => {
         let isSequenceRunning = false;
         let phoneNumberQueue = [];
         let autoRefreshInterval = null;
+        const callSequenceDelayMs = 5000; // Delay between sequential outbound calls
+        const autoRefreshIntervalMs = 5000; // Fixed interval for status polling
         
         // Po načtení stránky
         window.onload = function() {
@@ -576,10 +567,6 @@ fastify.get("/calls", async (_, reply) => {
           
           // Spuštění automatické aktualizace
           toggleAutoRefresh();
-          
-          // Přidání posluchače události pro checkbox
-          document.getElementById('autoRefresh').addEventListener('change', toggleAutoRefresh);
-          document.getElementById('refreshInterval').addEventListener('change', toggleAutoRefresh);
           
           // Načtení výsledků volání
           refreshCallResults();
@@ -667,8 +654,7 @@ fastify.get("/calls", async (_, reply) => {
         
         // Zapnutí/vypnutí automatické aktualizace
         function toggleAutoRefresh() {
-          const isEnabled = document.getElementById('autoRefresh').checked;
-          const interval = parseInt(document.getElementById('refreshInterval').value) || 500;
+          const isEnabled = true;
           
           // Zastavit existující interval
           if (autoRefreshInterval) {
@@ -680,7 +666,7 @@ fastify.get("/calls", async (_, reply) => {
           if (isEnabled && lastCallSid) {
             autoRefreshInterval = setInterval(() => {
               checkCallById(lastCallSid);
-            }, interval);
+            }, autoRefreshIntervalMs);
           }
         }
         
@@ -800,7 +786,7 @@ fastify.get("/calls", async (_, reply) => {
                 
                 // Pokud je sekvence aktivní a hovor skončil, zavolat další číslo po krátké pauze
                 if (isSequenceRunning && phoneNumberQueue.length > 0) {
-                  setTimeout(callNextNumber, 2000);
+                  setTimeout(callNextNumber, callSequenceDelayMs);
                 }
                 break;
               case 'busy': 
@@ -809,7 +795,7 @@ fastify.get("/calls", async (_, reply) => {
                 
                 // Pokud je sekvence aktivní a hovor byl obsazený, zavolat další číslo po krátké pauze
                 if (isSequenceRunning && phoneNumberQueue.length > 0) {
-                  setTimeout(callNextNumber, 2000);
+                  setTimeout(callNextNumber, callSequenceDelayMs);
                 }
                 break;
               case 'no-answer': 
@@ -818,7 +804,7 @@ fastify.get("/calls", async (_, reply) => {
                 
                 // Pokud je sekvence aktivní a nikdo to nezvedl, zavolat další číslo po krátké pauze
                 if (isSequenceRunning && phoneNumberQueue.length > 0) {
-                  setTimeout(callNextNumber, 2000);
+                  setTimeout(callNextNumber, callSequenceDelayMs);
                 }
                 break;
               case 'failed': 
@@ -827,7 +813,7 @@ fastify.get("/calls", async (_, reply) => {
                 
                 // Pokud je sekvence aktivní a hovor selhal, zavolat další číslo po krátké pauze
                 if (isSequenceRunning && phoneNumberQueue.length > 0) {
-                  setTimeout(callNextNumber, 2000);
+                  setTimeout(callNextNumber, callSequenceDelayMs);
                 }
                 break;
               default: 

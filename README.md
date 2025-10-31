@@ -32,14 +32,17 @@ npm install
 ```
 
 ### 4. Configure the Environment
-Create a .env file in the root directory and populate it with your credentials:
+Create your `.env` from the provided template and fill in real credentials:
+```bash
+cp .env.example .env
 ```
-ELEVENLABS_AGENT_ID=your-eleven-labs-agent-id;
-TWILIO_ACCOUNT_SID=your-twilio-account-sid;
-TWILIO_AUTH_TOKEN=your-twilio-auth-token;
-TWILIO_PHONE_NUMBER=your-twilio-phone-number;
-PORT=8000
-```
+
+Update the generated `.env` file with values for:
+- `ELEVENLABS_AGENT_ID`
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER`
+- `PUBLIC_URL` (use `http://localhost:8000` when testing locally)
 ### 5. Start the Server
 ```bash
 node index.js
